@@ -1,0 +1,187 @@
+Libcosm is a C library for calculating various physical quantities
+(varisous distances, comoving volume, growth rate and etc.) in various
+cosmological models including open- and flat-universe. Many papers
+about cosmological issues (especially by observers!) adopt
+Einstein-de-Sitter Universe, which has almost become obsolete due to
+many observations done by observers themselves!! This is because there
+is no simple analytic formula of various quatities (e.g. luminosity
+and angular diameter distance) for cosmological models with
+non-vanishing cosmological constant.  This library Libcosm privide a
+set of useful routines for calculating follwing quantities under a
+given cosmological model:
+
+1. cosmological distance 
+2. linear growth rate and critical over density
+3. Press-Schechter mass function
+4. linear power spectrum of density fluctuation
+
+All files in this library is copyright 1999,2000 by Kohji Yoshikawa.
+All rights reserved. Unpublished rights reserved under the copyright
+laws of Japan. No warranty is available in using this
+library. Redistribution and use in source and binary forms are
+permitted provided that this entire copyright notice is duplicated in
+all such copies, and that any documentation, announcements, and other
+materials related to such distribution and use acknowledge that the
+software was developed by Kohji Yoshikawa.
+
+------------------------------------------------------------------------
+*MANIFEST
+
+Cosmology.c          : source code for Libcosm
+Cosmology.h          : header file
+Makefile             : makefile for compiling and building Libcosm
+distance.c           : sample code
+formation_rate.c     : sample code
+growthrate.c         : sample code
+massfunc.c           : sample code
+power_spec.c         : sample code
+sigma.c              : sample code
+volume.c             : sample code
+
+
+*The location of Libcosm library
+
+  You can get the library from following addresses.
+
+  FTP site  ftp://ftp.kusastro.kyoto-u.ac.jp/pub/kohji/libcosm
+  WEB site  http://www.kusastro.kyoto-u.ac.jp/~kohji/research/libcosm
+
+*Installation
+
+  Libcosm is tested on following operating systems and compiles.
+
+  True64 UNIX V4.0: DEC C and GCC v2.95.1
+  LINUX 2.0.x and 2.2.x: GCC v.2.7.2.3 and GCC v.2.95.1
+  Solaris v.2.5.1 and v.2.6: GCC v.2.95.1
+
+  The procedures of intsalling Libcosm are as follows:
+
+    1: Extracting the archive.
+     % gunzip -cd libcosm.tar.gz | tar xvf -
+
+    2: Compling and Building 
+     % cd libcosm
+     % make 
+
+    3: Installing the library and the include file
+     % cp Cosmology.h /usr/local/include
+     % cp libcosm.a /usr/local/lib
+
+    4: Testing (Compiling a sample code)
+     % cc massfunc.c -o massfunc -I/usr/local/include -L/usr/local/lib -lcosm -lm
+     % ./massfunc 
+
+     This command produce the Press-Schecter mass function for standard 
+     CDM Universe.
+
+*API in Libcosm
+
+The information for a cosmological models such as density parameter,
+Hubble constant, and etc. is declared in the structure named
+"Cosmology" in Cosmology.h. Users must declare at least one structure
+of type "Cosmology" before using the APIs of Libcosm. Thus, the
+beginning of typical code looks like follows. The function "init_cosm"
+initialize various cosmological parameters for the structure.
+
+-------------------------------------
+#include "Cosmology.h"
+
+int main(int argc, char **argv)
+{
+    Cosmology cosm;
+    double omega0,omegab,lambda0,hubble,sigma8,pkindx;
+    int  DM;
+ 
+    omega0 = 1.e0;
+    omegab = 0.01;
+    lambda = 0.e0;
+    hubble = 0.5;
+    sigma8 = 0.5;
+    pkindx = 1.e0;
+
+    DM = 1; /* 1 for CDM and 2 for HDM with m=30eV */
+
+    init_cosm(&cosm,omega0,omegab,lambda,hubble,pkindx,sigma8,DM);
+          ......
+
+-------------------------------------
+
+Here, we describe the functions of available APIs.
+
+>> double growthrate(Cosmology,double)
+
+Returns the linear growthrate for a give cosmology. The returned
+growthrate is normalized to unity at the present. The first argument 
+is Cosmology structure and the second is the redshift.
+
+>> double d_growthrate_dt(Cosmology,double) 
+
+Returns the time derivative of linear growthrate in units of cgs unit
+system. The nomalization of growthrate is the same as above function.
+Two arguments are also the same as previous function.
+
+>>double power_spec(Cosmology,double)
+
+Retuens the present linear power spectrum of the density fluctuation.
+The second argument is the wavenumber in units of [Mpc^(-1)].
+
+>>double delta_c(Cosmology,double)
+
+Retuens the critical overdensity for the spherical non-linear collapse
+model. The second argument is the redshift.
+
+>>double Delta_c(Cosmology,double)
+
+Returns the mean overdensity of gravitationally objects collapsed at 
+redshift z=zcol. The second argument is the redshift zcol.
+
+>>double Transfer(Cosmology,double)
+
+The transfer function of the density power spectrum for a give
+cosmology. The second argumet is the wavenumber in units of [Mpc^(-1)].
+
+>>double sigmaR(Cosmology,double)
+
+Returns the present rms mass fluctuation on a scale R [Mpc]. The
+second argument is the scale R in units of [Mpc].
+
+>>double sigmaM(Cosmology,double)
+
+Returns the present rms mass fluctuation on a mass scale M [Msolar]. The
+second argument is the mass scale M in units of solar mass.
+
+>>double psmassfunc(Cosmology,double,double)
+
+Returns the Press--Schechter mass function in units of
+[Mpc^(-3)Msolar^(-1)]. The second and third arguments are mass in
+units of solar mass and the redshift, respectively.
+
+>>double cumulative_psmassfunc(Cosmology,double,double)
+
+Returns cumulative Press--Schechter mass function in units of [Mpc^(-3)].
+The arguments are the same as the previous function.
+
+>>double comoving_distance(Cosmology,double)
+
+Returns the comoving distance to the redshift z. The unit of the
+distance is [cm]. The second argument is the redshift z.
+
+>>double angular_distance(Cosmology,double)
+
+Returns the angular diameter distance in units of [cm]. The second
+argument is the same as previous function.
+
+>>double luminosity_distance(Cosmology,double)
+
+Returns the luminosity distance in units of [cm] to the redshift
+z. The second argument is the same as the previous function.
+
+>>double dVoverdz(Cosmology,double)
+
+Returns the differential comoving volume for unit solid angle in units
+of [cm^3/redshift].  The second argument the redshift.
+
+>>double comoving_volume(Cosmology,double,double)
+
+Returns the comoving volume to the redshift z for unit solid angle.
+The unit of the volume is [cm^3].
